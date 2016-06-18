@@ -8,9 +8,11 @@ addons:
     packages:
         - pandoc
 # command to install dependencies
-install: "pip install codeclimate-test-reporter"
+install: 
+  - "pip install codeclimate-test-reporter zc.buildout"
+  - "buildout"
 # command to run tests
-script: "python setup.py test"
+script: "bin/py.test"
 addons:
       code_climate:
                 repo_token: 1db38834789276aaa63d267ac93aa9618919f61ba47edea416667a120d005e70

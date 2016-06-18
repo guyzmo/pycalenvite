@@ -62,7 +62,7 @@ def build_api(calenvite, args=None):
     root = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..')
     static_folder = os.path.join(root, 'static')
 
-    app = Flask('pyinvoice', static_folder=static_folder)
+    app = Flask('pycalenvite', static_folder=static_folder)
 
     # Enable webpack asset tracking and availability
 
