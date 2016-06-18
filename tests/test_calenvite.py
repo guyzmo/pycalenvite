@@ -508,25 +508,25 @@ class TestCalenvite:
 
     def test_add_event(self):
         uuids = []
-        uuid = self.cal.add_event('Test #1', td(minutes=20))
+        uuid = self.cal.create_invite('Test #1', td(minutes=20))
         assert len(self.cal._pending.values()) == 1
         assert self.cal._pending[uuid].subject == 'Test #1'
         assert self.cal._pending[uuid].length == td(minutes=20)
         assert self.cal._pending[uuid].uuid == uuid
         uuids.append(uuid)
-        uuid = self.cal.add_event('Test #2', td(hours=4))
+        uuid = self.cal.create_invite('Test #2', td(hours=4))
         assert len(self.cal._pending.values()) == 2
         assert self.cal._pending[uuid].subject == 'Test #2'
         assert self.cal._pending[uuid].length == td(hours=4)
         assert self.cal._pending[uuid].uuid == uuid
         uuids.append(uuid)
-        uuid = self.cal.add_event('Test #3', td(days=2))
+        uuid = self.cal.create_invite('Test #3', td(days=2))
         assert len(self.cal._pending.values()) == 3
         assert self.cal._pending[uuid].subject == 'Test #3'
         assert self.cal._pending[uuid].length == td(days=2)
         assert self.cal._pending[uuid].uuid == uuid
         uuids.append(uuid)
-        uuid = self.cal.add_event('Test #4', td(minutes=90))
+        uuid = self.cal.create_invite('Test #4', td(minutes=90))
         assert len(self.cal._pending.values()) == 4
         assert self.cal._pending[uuid].subject == 'Test #4'
         assert self.cal._pending[uuid].length == td(minutes=90)
@@ -536,11 +536,11 @@ class TestCalenvite:
 
     def test_confirm_event__inexists(self):
         with pytest.raises(Exception):
-            self.cal.confirm_event('42', dt(2016, 6, 18, 20, 40))
+            self.cal.confirm_invite('42', dt(2016, 6, 18, 20, 40))
 
     def test_confirm_event__first(self):
         uuids = self.test_add_event()
-        self.cal.confirm_event(uuids[0], dt(2016, 6, 18, 20, 40))
+        self.cal.confirm_invite(uuids[0], dt(2016, 6, 18, 20, 40))
         assert uuids[0] not in self.cal._pending
         assert len(self.cal._calendar_invites.events) == 1
         tl = list(self.cal._calendar_invites.timeline)
@@ -549,7 +549,7 @@ class TestCalenvite:
 
     def test_confirm_event__second(self):
         uuids = self.test_confirm_event__first()
-        self.cal.confirm_event(uuids[1], dt(2016, 6, 18, 10, 40))
+        self.cal.confirm_invite(uuids[1], dt(2016, 6, 18, 10, 40))
         assert uuids[1] not in self.cal._pending
         assert len(self.cal._calendar_invites.events) == 2
         tl = list(self.cal._calendar_invites.timeline)
@@ -558,7 +558,7 @@ class TestCalenvite:
 
     def test_confirm_event__third(self):
         uuids = self.test_confirm_event__second()
-        self.cal.confirm_event(uuids[2], dt(2016, 6, 21, 12, 0))
+        self.cal.confirm_invite(uuids[2], dt(2016, 6, 21, 12, 0))
         assert uuids[2] not in self.cal._pending
         assert len(self.cal._calendar_invites.events) == 3
         tl = list(self.cal._calendar_invites.timeline)
@@ -568,12 +568,12 @@ class TestCalenvite:
     def test_confirm_event__fourth__no_avail(self):
         uuids = self.test_confirm_event__third()
         with pytest.raises(Exception):
-            self.cal.confirm_event(uuids[3], dt(2016, 6, 21, 13, 0))
+            self.cal.confirm_invite(uuids[3], dt(2016, 6, 21, 13, 0))
         return uuids
 
     def test_confirm_event__fourth(self):
         uuids = self.test_confirm_event__fourth__no_avail()
-        self.cal.confirm_event(uuids[3], dt(2016, 6, 24, 12, 0))
+        self.cal.confirm_invite(uuids[3], dt(2016, 6, 24, 12, 0))
         assert uuids[3] not in self.cal._pending
         assert len(self.cal._calendar_invites.events) == 4
         tl = list(self.cal._calendar_invites.timeline)

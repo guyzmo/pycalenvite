@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Flask with WebPack</title>
+
+    {{ stylesheet_tag("app_css") | safe }}
+
+    <style>
+    @media (min-width: 550px) {
+        .container  { max-width: 1400px; }
+    }
+
+    .modal-dialog {
+        padding: 5px;
+        background: #fefefe;
+        border: #333333 solid 1px;
+        border-radius: 5px;
+        margin-left: -200px;
+        position: fixed;
+        left: 50%;
+        top: 30%;
+        z-index: 11;
+        width: 360px;
+        -webkit-box-shadow: 33px 38px 56px 16px rgba(0,0,0,0.76);
+        -moz-box-shadow: 33px 38px 56px 16px rgba(0,0,0,0.76);
+        box-shadow: 33px 38px 56px 16px rgba(0,0,0,0.76);
+
+    }
+
+    button[disabled] {
+        background:#ccc !important;
+        border-color: #ccc !important;
+        text-shadow:none !important;
+    }
+    </style>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <!-- <h1>Test #1</h1> -->
+    <!-- <div id="test1"></div> -->
+    <!-- <h1>Test #2</h1> -->
+    <!-- <div id="test2"></div> -->
+    <h1>Invoice Application</h1>
+    <div class="container"><div id="content"></div></div>
+  </body>
+  {{ javascript_tag("app_js") | safe }}
+</html>

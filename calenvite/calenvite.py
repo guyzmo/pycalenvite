@@ -121,6 +121,28 @@ class Calenvite:
         self._session = Session()
         self._session.mount('webcal', WebcalAdapter())
 
+    @property
+    def subscriptions(self):
+        return self._subscriptions
+
+    @property
+    def calendar(self):
+        '''Gets the calendar with confirmed invites
+
+        :return: ICS with those invites'''
+        calendar = Calendar()
+        calendar.merge(self._calendar_soup)
+        calendar.merge(self._calendar_invites)
+        return calendar
+
+    @property
+    def invites(self):
+        return self._pending
+
+    @property
+    def meetings(self):
+        return self._calendar_invites
+
     def subscribe(self, uri: str):
         '''Subscribe to an external calendar into internal one.
 
@@ -134,21 +156,10 @@ class Calenvite:
             calendar = Calendar(self._session.get(urlunparse(uri)).text)
 
         self._calendar_soup.merge(calendar)
-
     def refresh(self):
         self._calendar_soup = Calendar()
         for uri in self._subscriptions:
             self.subscribe_calendar(uri)
-
-    @property
-    def calendar(self):
-        '''Gets the calendar with confirmed invites
-
-        :return: ICS with those invites'''
-        calendar = Calendar()
-        calendar.merge(self._calendar_soup)
-        calendar.merge(self._calendar_invites)
-        return calendar
 
     def _generate_uuid(self):
         '''Generates unique UUID (internal method)
@@ -162,7 +173,12 @@ class Calenvite:
                 uuid = None
         return uuid
 
-    def add_event(self, subject: str, length: timedelta):
+    def show_invite(self, uuid):
+        '''Returns a stored invitation (or None)
+        '''
+        return self._pending.get(uuid, None)
+
+    def create_invite(self, subject: str, length: timedelta):
         '''Creates a new event to be confirmed
 
         :return: unique hash'''
@@ -170,7 +186,7 @@ class Calenvite:
         self._pending[uuid] = PendingEvent(subject, length, uuid)
         return uuid
 
-    def confirm_event(self, uuid: str, time: datetime):
+    def confirm_invite(self, uuid: str, time: datetime):
         '''Confirms an event with given uuid
 
         :return: Confirmed event'''
