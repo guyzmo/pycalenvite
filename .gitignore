@@ -1,0 +1,6 @@
+.installed.cfg
+var/
+__pycache__/
+*.egg-info
+.coverage
+.cache

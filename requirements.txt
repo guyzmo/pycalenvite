@@ -1,0 +1,3 @@
+-e https://github.com/guyzmo/ics.py@HEAD#egg=ics
+docopt
+flask
