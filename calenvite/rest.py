@@ -166,9 +166,10 @@ def build_api(calenvite, args=None):
                 raise Exception('Missing {} parameter for the method.') from err
             except ISO8601Error as err:
                 raise Exception('Wrong date format. It shall be ISO8601 compliant.')
-            except Exception as err:
-                # TODO handle correctly missing UUID (custom exception)
-                raise err from err
+            except ResourceNotFound as err:
+                raise Exception('The provided UUID is unknown: {}'.format(uuid)) from err
+            except ResourceConflict as err:
+                raise Exception('Impossible to accept event: the slot is already taken.')
 
         def post(self, uuid):
             if uuid is None:

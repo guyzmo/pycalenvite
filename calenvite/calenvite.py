@@ -16,10 +16,20 @@ from ics.timeline import Timeline
 import logging
 log = logging.getLogger('calenvite.calenvite')
 
+
+class ResourceNotFound(Exception):
+    pass
+
+
+class ResourceConflict(Exception):
+    pass
+
+
 class WebcalAdapter(HTTPAdapter):
     def get_connection(self, url, proxies=None):
         url = 'http'+url[6:] if url.startswith('webcal') else url
         return super().get_connection(url, proxies)
+
 
 class Calendar(CalendarBase):
     class EventUid:
@@ -191,12 +201,12 @@ class Calenvite:
 
         :return: Confirmed event'''
         if uuid not in self._pending:
-            raise Exception('No event is referenced by UUID')
+            raise ResourceNotFound('No event is referenced by UUID')
 
         event = self._pending[uuid].as_event(time)
 
         if not self._calendar_soup.has_slot(event) or not self._calendar_invites.has_slot(event):
-            raise Exception('No availibility for event at chosen time.')
+            raise ResourceConflict('No availability for event at chosen time.')
 
         self._calendar_invites.events.add(event)
         del(self._pending[uuid])
