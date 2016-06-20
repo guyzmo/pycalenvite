@@ -1,5 +1,6 @@
 -e https://github.com/guyzmo/ics.py@HEAD#egg=ics
 docopt
+isodate
 flask
 flask_cors
 flask_webpack

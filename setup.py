@@ -169,6 +169,7 @@ setup(name='pycalenvite',
       install_requires=[
             'docopt',
             'ics',
+            'isodate',
             'flask',
             'Flask-restful',
             'Flask-Webpack',
