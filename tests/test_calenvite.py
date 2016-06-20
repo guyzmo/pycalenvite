@@ -508,25 +508,25 @@ class TestCalenvite:
 
     def test_add_event(self):
         uuids = []
-        uuid = self.cal.create_invite('Test #1', td(minutes=20))
+        uuid = self.cal.create_invite('Test #1', td(minutes=20)).uuid
         assert len(self.cal._pending.values()) == 1
         assert self.cal._pending[uuid].subject == 'Test #1'
         assert self.cal._pending[uuid].length == td(minutes=20)
         assert self.cal._pending[uuid].uuid == uuid
         uuids.append(uuid)
-        uuid = self.cal.create_invite('Test #2', td(hours=4))
+        uuid = self.cal.create_invite('Test #2', td(hours=4)).uuid
         assert len(self.cal._pending.values()) == 2
         assert self.cal._pending[uuid].subject == 'Test #2'
         assert self.cal._pending[uuid].length == td(hours=4)
         assert self.cal._pending[uuid].uuid == uuid
         uuids.append(uuid)
-        uuid = self.cal.create_invite('Test #3', td(days=2))
+        uuid = self.cal.create_invite('Test #3', td(days=2)).uuid
         assert len(self.cal._pending.values()) == 3
         assert self.cal._pending[uuid].subject == 'Test #3'
         assert self.cal._pending[uuid].length == td(days=2)
         assert self.cal._pending[uuid].uuid == uuid
         uuids.append(uuid)
-        uuid = self.cal.create_invite('Test #4', td(minutes=90))
+        uuid = self.cal.create_invite('Test #4', td(minutes=90)).uuid
         assert len(self.cal._pending.values()) == 4
         assert self.cal._pending[uuid].subject == 'Test #4'
         assert self.cal._pending[uuid].length == td(minutes=90)
