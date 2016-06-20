@@ -1,3 +1,6 @@
 -e https://github.com/guyzmo/ics.py@HEAD#egg=ics
 docopt
 flask
+flask_cors
+flask_webpack
+flask_restful

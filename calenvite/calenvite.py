@@ -7,8 +7,11 @@ from uuid import uuid4
 
 from requests import Session
 from requests.adapters import HTTPAdapter
-from datetime import datetime, timedelta
 from urllib.parse import urlparse, urlunparse
+
+from datetime import datetime, timedelta
+from arrow.arrow import Arrow
+dt_arrow = lambda dt: Arrow.fromdatetime(dt)
 
 from ics import Calendar as CalendarBase, Event
 from ics.timeline import Timeline
@@ -16,13 +19,9 @@ from ics.timeline import Timeline
 import logging
 log = logging.getLogger('calenvite.calenvite')
 
+from calenvite.exceptions import ResourceNotFound, ResourceConflict
 
-class ResourceNotFound(Exception):
-    pass
-
-
-class ResourceConflict(Exception):
-    pass
+DEFAULT_DOMAIN='localhost'
 
 
 class WebcalAdapter(HTTPAdapter):
@@ -105,10 +104,11 @@ class Calendar(CalendarBase):
                 return False
         return True
 
+Event.__json__ = lambda ev: dict(name=ev.name, uid=ev.uid, begin=ev.begin, end=ev.end)
 
 class PendingEvent:
     '''Represents a pending event. 
-    
+
     It is defined by a subject and length, and gets an unique identifier.
     '''
     def __init__(self, subject: str, length: timedelta, uuid: str):
@@ -118,9 +118,12 @@ class PendingEvent:
 
     def as_event(self, time: datetime):
         return Event(name=self.subject, 
+                uid='{}@{}'.format(self.uuid, DEFAULT_DOMAIN),
                 duration=self.length,
                 begin=time)
 
+    def __json__(self):
+        return dict(subject=self.subject, length=self.length, uuid=self.uuid)
 
 class Calenvite:
     def __init__(self):
@@ -147,7 +150,7 @@ class Calenvite:
 
     @property
     def invites(self):
-        return self._pending
+        return self._pending.values()
 
     @property
     def meetings(self):
@@ -158,18 +161,19 @@ class Calenvite:
 
         :return: success in loading the ICS calendar
         '''
-        uri = urlparse(uri)
         self._subscriptions.append(uri)
+        uri = urlparse(uri)
         if uri.scheme == 'file':
             calendar = Calendar(open(uri.path, 'r'))
         elif uri.scheme == 'http' or uri.scheme == 'https' or uri.scheme == 'webcal':
             calendar = Calendar(self._session.get(urlunparse(uri)).text)
 
         self._calendar_soup.merge(calendar)
+
     def refresh(self):
         self._calendar_soup = Calendar()
         for uri in self._subscriptions:
-            self.subscribe_calendar(uri)
+            self.subscribe(uri)
 
     def _generate_uuid(self):
         '''Generates unique UUID (internal method)
@@ -178,10 +182,10 @@ class Calenvite:
         '''
         uuid = None
         while not uuid:
-            uuid = str(urlsafe_b64encode(uuid4().bytes).replace(b'=', b''))
+            uuid = urlsafe_b64encode(uuid4().bytes).replace(b'=', b'')
             if uuid in self._pending: # pragma: no cover
                 uuid = None
-        return uuid
+        return uuid.decode('utf-8')
 
     def show_invite(self, uuid):
         '''Returns a stored invitation (or None)
@@ -194,7 +198,7 @@ class Calenvite:
         :return: unique hash'''
         uuid = self._generate_uuid()
         self._pending[uuid] = PendingEvent(subject, length, uuid)
-        return uuid
+        return self._pending[uuid]
 
     def confirm_invite(self, uuid: str, time: datetime):
         '''Confirms an event with given uuid
@@ -219,8 +223,8 @@ class Calenvite:
         :param date: a day for which to get events
 
         :return: list of time ranges (tuples with start/end times)'''
-        for event in self.calendar.timeline.start_after(date):
-            if event.begin < date+delta:
+        for event in self.calendar.timeline.start_after(dt_arrow(date)):
+            if event.begin < dt_arrow(date+delta):
                 yield (event.begin.datetime, event.end.datetime)
 
 

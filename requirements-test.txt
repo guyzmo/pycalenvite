@@ -2,5 +2,7 @@
 pytest
 pytest-cov
 pytest-sugar
+pytest-flask
 pytest-flakes
-pytest-datadir-ng
+-e https://github.com/guyzmo/pytest-datadir-ng@HEAD#egg=pytest-datadir-ng
+-e https://github.com/guyzmo/ics.py@HEAD#egg=ics

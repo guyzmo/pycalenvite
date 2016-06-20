@@ -170,12 +170,15 @@ setup(name='pycalenvite',
             'docopt',
             'ics',
             'flask',
+            'Flask-restful',
+            'Flask-Webpack',
+            'Flask-cors'
       ],
-      # entry_points="""
-      # # -*- Entry points: -*-
-      # [console_scripts]
-      # calenvite = calenvite.cli:main
-      # """,
+      entry_points="""
+      # -*- Entry points: -*-
+      [console_scripts]
+      calenvite = calenvite.rest:main
+      """,
       license='GPLv2',
       packages=find_packages(exclude=['tests']),
       tests_require=[

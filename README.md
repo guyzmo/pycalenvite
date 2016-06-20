@@ -20,9 +20,24 @@ Or you can use nothing:
 
 Or you can use your favorite *env thing.
 
+## TODO
+
+* Make it support reccurent events (ics.py)
+* Make it support event arithmetics (PR waiting in ics.py)
+* For tests, support of class-wide datadir (PR waiting in datadir)
+* Adapt the code so it's convenient to the UI (webpack integration?)
+
+Notes:
+
+ * While PRs are pending, a hard dependencies are made to forks of ics.py and
+   datadir, check requirements.txt (and buildout.cfg) for which.
+
 ## Usage
 
-At the time being the code only consists in a library.
+    % buildout
+    % bin/calenvite --verbose
+
+or run calenvite from your favorite *env thing.
 
 ## License
 
